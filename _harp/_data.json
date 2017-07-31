@@ -1,0 +1,11 @@
+{
+  "_comment" : "so in about page, this title and description will override those globals in _harp.json",
+  "about": {
+    "title": "Welcome to my about page",
+    "description": "I’m awesome and so are you"
+  },
+  "404": {
+    "title": "404 ERROR",
+    "description": "something is wrong!"
+  }
+}
