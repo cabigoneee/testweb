@@ -7,44 +7,45 @@
   <title>Hi All</title>
   <meta name="description" content="My default descriptions" />
 
-  <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"> -->
-  <!-- <link rel="stylesheet" type="text/css" href="css/theme.css"> -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body>
 
 	<!--  -->
 
   <!-- "yield" represents the core content of webpage to be loaded   -->
-	<div>
-  <a href="/TestWeb/">Home</a>
-<a href="/">Home1</a>
+	<div class="intro-header">
+        <div class="container">
 
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="jumbotron">
+                        <h1>
+                          Hello, Cabigon Desu!
+                        </h1>
+                        <div class="code">
+                          <ul>
+                            <li>harp compile _harp ./</li>
+                            <li>git add -A</li>
+                            <li>git commit -m "message here"</li>
+                            <li>git push origin master</li>
+                          </ul>
+                        </div>
+                        <div class="start-btn">
+                          <a href="#" class="btn btn-info" role="button">Start !!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container -->
 </div>
-<div>
-  Hello, Cabigon Desu!
-</div>
-<div>
-  <ul>
-    <li>harp compile _harp ./</li>
-    <li>git add -A</li>
-    <li>git commit -m "message here"</li>
-    <li>git push origin master</li>
-  </ul>
-</div>
+<!-- /.intro-header -->
 
 	<!--  -->
 
-	<!-- javascript //-->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="js/bootstrap.min.js" type="text/javascript"></script>
-  <script>
-    $(document).ready(function () {
-      // initalize tooltips
-      $('[data-toggle="tooltip"]').tooltip();
-      // initalize popovers
-      $('[data-toggle="popover"]').popover();
-    });
-  </script>
 
 </body>
 </html>
