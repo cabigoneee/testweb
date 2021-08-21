@@ -71,3 +71,6 @@ h1 {
 .card-button.shown {
   background-color: darkslategrey;
 }
+.shown {
+  background-color: darkslategrey;
+}
