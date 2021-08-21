@@ -1,1 +1,73 @@
-.normal-body{font-family:"Helvetica";padding:50px 20px 0;background-color:lightblue;color:#444;margin:0}.full-body{font-family:"Helvetica";padding:0;background-color:lightblue;color:#444;margin:0}.intro-header{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}h1{text-align:center}.code{padding-left:20%;padding-right:20%}.start-btn{text-align:center}.top{height:50vh;padding:0}.bottom{height:50vh;padding:0}.top-left{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;background-color:#3d231b;height:100%;color:#FFF}.top-right{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;background-color:#FFF;height:100%;color:#3d231b}.bottom-left{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;background-color:#2ECC71;height:100%;color:#F7DC6F}.bottom-right{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;background-color:#F7DC6F;height:100%;color:#2ECC71}
+.normal-body {
+  font-family: "Helvetica";
+  padding: 50px 20px 0;
+  background-color: lightblue;
+  color: #444;
+  margin: 0;
+}
+.full-body {
+  font-family: "Helvetica";
+  padding: 0;
+  background-color: lightblue;
+  color: #444;
+  margin: 0;
+}
+.intro-header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+h1 {
+  text-align: center;
+}
+.code {
+  padding-left: 20%;
+  padding-right: 20%;
+}
+.start-btn {
+  text-align: center;
+}
+.top {
+  height: 50vh;
+  padding: 0;
+}
+.bottom {
+  height: 50vh;
+  padding: 0;
+}
+.top-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #3d231b;
+  height: 100%;
+  color: #FFF;
+}
+.top-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFF;
+  height: 100%;
+  color: #3d231b;
+}
+.bottom-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #2ECC71;
+  height: 100%;
+  color: #F7DC6F;
+}
+.bottom-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F7DC6F;
+  height: 100%;
+  color: #2ECC71;
+}
+.card-button.shown {
+  background-color: darkslategrey;
+}

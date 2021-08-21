@@ -1,0 +1,57 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="wrapper">
+  <div class="reset">
+    <div class="row">
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="exampleInputName2">Amount of Player</label>
+          <input type="number" class="form-control" id="playerInput">
+        </div>
+        <a id="resetButton" class="btn btn-default">Reset</a>
+      </form>
+    </div>
+  </div>
+  <table class="table">
+    <tbody id="cardGroup">
+
+    </tbody>
+  </table>
+</div>
+	
+<script>
+  $(document).ready(function() {
+    $('#resetButton').on('click', function(){
+      // clear all appended elements
+      $("#cardGroup").empty()
+
+      var counter = 0;
+      var people = $("#playerInput").val()
+      var totalCard = people * 10 + 4
+      var i, j;
+      for(i=0; i<=people; i++) {
+
+        var row="<tr>"
+        for(j=0; j<10; j++) {
+          if(counter <= totalCard) {
+            var element
+            if (counter == 0) {
+              element = "<td></td>"
+              counter++
+            }else {
+              element = "<td><button type='button' class='btn btn-block card-button'>" + counter++ + "</button></td>"
+            }
+            row = row + element
+          }
+        }
+        row = row + "</tr>"
+
+        $("#cardGroup").append(row)
+      }
+
+    });
+
+    $('body').on('click', '.card-button', function() {
+      $(this).toggleClass("shown")
+    })
+  });
+</script>
