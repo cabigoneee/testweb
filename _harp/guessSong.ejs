@@ -1,0 +1,22 @@
+<div id="ytplayer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="./script/jquery-youtube.js"></script>
+<script>
+    $('#ytplayer').YTplayer({});
+    $('#ytplayer').YTplayer({
+    // Basic setting
+    width: 1000,                // video width
+    height: 560,                // video height
+    videoId: '9v4LbPJFCqQ',     // youtube video id
+
+    // Events
+    onReady: function(){},      // on video ready
+    onStart: function(){},      // on video start
+    onPause: function(){},      // on video pause
+    onEnd: function(){},        // on video end
+    onBuffer: function(){},     // on video buffer
+    onStateChange: function(){}, // will be triggered by all the 5 events above
+});
+</script>
