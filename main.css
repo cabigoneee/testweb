@@ -68,9 +68,21 @@ h1 {
   height: 100%;
   color: #2ECC71;
 }
+/* 6nimmt.html */
 .card-button.shown {
   background-color: darkslategrey;
 }
 .shown {
   background-color: darkslategrey;
+}
+/* guess-song.html */
+.songInfo {
+  display: flex;
+  justify-content: center;
+}
+.songTitle {
+  font-size: 32px;
+}
+.songSinger {
+  font-size: 26px;
 }
