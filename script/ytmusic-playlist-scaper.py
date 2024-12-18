@@ -2,21 +2,23 @@ from ytmusicapi import YTMusic
 import json
 import csv
 from datetime import datetime
+import requests
 
 ############################ main
 # retrieve json from API
-playlist_id = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c"
+playlist_id = "RDCLAK5uy_nPxXg1gYFA4ZfQ0ke7N8ONHUPg5Ovr7AU"
 api_key = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
 
-# https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&part=snippet&maxResults=100&playlistId=RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c&key=[YOUR_API_KEY]'
-# ytmusic = YTMusic()
-# playlist = ytmusic.get_playlist(playlistId="RDCLAK5uy_np-D-N28McB0WbmPyWUOKGXOSoWpi8jh8", limit=None)
+url = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&part=snippet&maxResults=100&playlistId=%s&key=%s" % (playlist_id, api_key)
+res = requests.get(url)
+
+data = res.json()
 
 # convert json to csv
-json_file = './pinocchiop.json'
+# json_file = './pinocchiop.json'
 
-with open(json_file, encoding="utf8") as json_data:
-    data = json.load(json_data)
+# with open(json_file, encoding="utf8") as json_data:
+#     data = json.load(json_data)
 
 songs = []
 fields = ["videoId", "title", "singer"]

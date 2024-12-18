@@ -1,3 +1,7 @@
+/* general */
+.flex {
+  display: flex;
+}
 .normal-body {
   font-family: "Helvetica";
   padding: 50px 20px 0;
@@ -74,6 +78,23 @@ h1 {
 }
 .shown {
   background-color: darkslategrey;
+}
+/* select-song.html */
+.playlistInput {
+  padding-bottom: 1em;
+}
+.playlistInputKey {
+  align-content: center;
+}
+.dropdown {
+  width: 100%;
+}
+.input-alert {
+  padding: 0rem 0.75rem;
+  color: #ff4545;
+}
+.guessSongSubmit {
+  margin-left: auto;
 }
 /* guess-song.html */
 .songInfo {
