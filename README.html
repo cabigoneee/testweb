@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hi All</title>
+<meta name="description" content="My default descriptions" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/main.css">
+<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+</head>
+<body class="normal-body">
+<!--  -->
+<!-- "yield" represents the core content of webpage to be loaded   -->
+<h1>Cabigon&#39;s personal website</h1><h3>Prerequisite</h3><p>Install &quot;Harp&quot; library via node</p>
+<pre><code>npm install -g harp
+</code></pre>
+<h3>To deploy to github.io</h3><p>After updating code in ejs, use harp to convert code to html format so that github.io can read.</p>
+<pre><code>harp _harp .
+git add -A
+git commit -m &quot;message here&quot;
+git push origin master
+</code></pre>
+<h3>To local test</h3><p>Use below command for local test, dafault listening port is at 9000, or use <strong>--port</strong> to define another port</p>
+<pre><code>harp _harp
+harp --port 3001 _harp
+</code></pre>
+
+<!--  -->
+</body>
+</html>
