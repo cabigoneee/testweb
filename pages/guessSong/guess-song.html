@@ -22,6 +22,7 @@
 <a id="changeSectionButton" class="btn btn-light">other Section</a>
 <a id="playButton" class="btn btn-light">Play / Pause</a>
 <a id="nextButton" class="btn btn-light">Next Song</a>
+<a id="showAnswerButton" class="btn btn-light">Show Answer</a>
 </form>
 </div>
 <div class="row songInfo">
@@ -52,6 +53,7 @@
 var player = $('#ytPlayer')
 var playlistName = "ado";
 var playlistData;
+var showAnswer = false;
 // when webpage ready, init
 $(document).ready(function() {
 //get url param
@@ -87,10 +89,13 @@ console.log(e)
 }
 });
 }
+//hide the answer
+toggleAnswerDisplay();
 // set button onclick function
 $('#changeSectionButton').on('click', onChangeSectionButton)
 $('#nextButton').on('click', onNextButton)
 $('#playButton').on('click', onPlayButton)
+$('#showAnswerButton').on('click', onShowAnswerButton)
 // set team block
 var totalRows = Math.ceil(teamSize / 2)
 var numberOfTeamlastRow = teamSize - (Math.floor((teamSize- 1) / 2)) * 2
@@ -130,7 +135,11 @@ width: "100%",                // video width
 // height: 560,                // video height
 videoId: thisSong.videoId,     // youtube video id
 // Events
-onReady: function() { console.log("on ready") ; autoPlay() },      // on video ready
+onReady: function() {
+console.log("on ready") ;
+autoPlay();
+hideVideoPlayer();
+},      // on video ready
 onStart: function(){},      // on video start
 onPause: function(){},      // on video pause
 onEnd: function(){},        // on video end
@@ -146,7 +155,7 @@ disablekb: 1,           // Values: 0 or 1. Default is 0. Setting to 1 will disab
 fs: 0,                  // Values: 0 or 1. The default value is 1, which causes the fullscreen button to display. Setting this parameter to 0 prevents the fullscreen button from displaying
 hl: 'en',               // Sets the player's interface language
 iv_load_policy: 3,      // Values: 1 or 3. Default is 1. Setting to 1 will cause video annotations to be shown by default, whereas setting to 3 will cause video annotations to not be shown by default
-playsinline: 0,         // This parameter controls whether videos play inline or fullscreen in an HTML5 player on iOS
+playsinline: 1,         // This parameter controls whether videos play inline or fullscreen in an HTML5 player on iOS
 rel: 0,                 // Values: 0 or 1. Default is 1. This parameter indicates whether the player should show related videos when playback of the initial video ends
 showinfo: 0,            // Values: 0 or 1. The parameter's default value is 1. If you set the parameter value to 0, then the player will not display information like the video title and uploader before the video starts playing
 theme: 'dark'           // This parameter indicates whether the embedded player will display player controls (like a play button or volume control) within a dark or light control bar. Valid parameter values are dark and light
@@ -197,6 +206,9 @@ var playerBlock = "<div id='ytPlayer'></div>"
 $("#ytPlayer").remove()
 $("#ytPlayerWrapper").append(playerBlock)
 initializeYoutubePlayer()
+showAnswer = false
+toggleAnswerDisplay()
+removeVideoOverlay();
 }
 function onTeamButton() {
 console.log("Next Button is clicked")
@@ -204,6 +216,11 @@ var clickedTeamId = $(this).attr('val')
 var clickedTeam = $("#teamScore" + clickedTeamId)
 var currentValue = Number(clickedTeam.text())
 clickedTeam.text(++currentValue)
+}
+function onShowAnswerButton() {
+console.log("Show Answer Button is clicked")
+showAnswer = true;
+toggleAnswerDisplay();
 }
 // convert csv to object of array
 function processDataFile(raw) {
@@ -249,6 +266,38 @@ finalUrl += element.key + "=" + element.value + "&"
 })
 console.log(finalUrl)
 return finalUrl
+}
+function toggleAnswerDisplay() {
+if (showAnswer) {
+$('#songTitle').show();
+$('#songSinger').show();
+removeVideoOverlay();
+} else {
+$('#songTitle').hide();
+$('#songSinger').hide();
+}
+}
+function hideVideoPlayer() {
+console.log("videoOverlay");
+if(!showAnswer) {
+var playerPosition = $('#ytPlayer').position();
+var playerWidth = $('#ytPlayer').width();
+var playerHeight = $('#ytPlayer').height();
+// Add a div overlay to cover the video player
+$('<div id="videoOverlay"></div>').css({
+position: 'absolute',
+top: playerPosition.top + 'px',
+left: playerPosition.left + 'px',
+width: playerWidth + 'px',
+height: playerHeight + 'px',
+background: 'black', // Adjust the color as needed
+opacity: 0.9 // Adjust the opacity as needed
+}).appendTo('#ytPlayerWrapper');
+}
+}
+function removeVideoOverlay() {
+console.log("remove overlay");
+$('#videoOverlay').remove();
 }
 </script>
 <!--  -->
