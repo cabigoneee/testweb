@@ -239,7 +239,7 @@ const input = res.items.map(item => {
 return {
 videoId: item.snippet.resourceId.videoId,
 title: item.snippet.title,
-singer: ""
+singer: item.snippet.videoOwnerChannelTitle
 };
 });
 console.log("playlistData",input);
