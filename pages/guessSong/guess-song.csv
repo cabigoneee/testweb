@@ -75,18 +75,21 @@
         } else if (customPlaylistId) {
             console.log("using custom playlist")
             // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
+            // apiKey = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
+            
             param = {
                 apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
                 playlistId: customPlaylistId,
                 pageToken: "",
             }
 
-            customPlaylistRes = []
-
-            // use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
-            initalCustomPlaylistRes = []
+            customPlaylistRes = {
+                items: []
+            }
 
             fetchPlaylistItems(param)
+
+            
         }
         //hide the answer
         toggleAnswerDisplay();
@@ -265,13 +268,14 @@
     function processYTGetPlaylistItems(res) {
         console.log("on processed YT API");
         console.log("res",res);
+        console.log("res.items", res.items)
 
         // Convert res JSON to object format
-        const input = res.map(item => {
+        const input = res.items.map(item => {
             return {
                 videoId: item.snippet.resourceId.videoId,
                 title: item.snippet.title,
-                singer: item.snippet.videoOwnerChannelTitle
+                singer: ""
             };
         });
         console.log("playlistData",input);
@@ -288,19 +292,15 @@
             dataType: 'json',
             success: function(data) {
                 // console.log(customPlaylistRes)
-                if(initalCustomPlaylistRes.length == 0) {
-                    initalCustomPlaylistRes = initalCustomPlaylistRes.concat(data.items)
-                }
-                customPlaylistRes = customPlaylistRes.concat(data.items)
+                customPlaylistRes.items = customPlaylistRes.items.concat(data.items)
                 // Check if there is a next page
                 if (data.prevPageToken && param.prevPageToken == data.prevPageToken) {
                     //there is a bug where featured playlist's pagination does not work, the nextPageToken will keep repeating
-                    console.log("youtube api nextPageToken bug, stop looping")
-                    // due to bug, use only first page's result
-                    processYTGetPlaylistItems(initalCustomPlaylistRes);
+                    // after fetching all items in playlist
+                    processYTGetPlaylistItems(customPlaylistRes);
                 } else if (data.nextPageToken) {
                     console.log("have nextPageToken, loop again")
-                    param.prevPageToken = data.prevPageToken; //use this as indicator to determine if the playlist is endless looping
+                    param.prevPageToken = data.prevPageToken; //use this as indicator to determin if the playlist is endless looping
                     param.pageToken = data.nextPageToken;
                     // Fetch the next page of results
                     fetchPlaylistItems(param);
@@ -313,6 +313,7 @@
                 console.log(e)
             }
         });
+        
     }
 
     function shuffleArray(array) {
@@ -329,7 +330,7 @@
             {key: "key", value: param.apiKey},
             {key: "part", value: "contentDetails"},
             {key: "part", value: "snippet"},
-            {key: "maxResults", value: 50},
+            {key: "maxResults", value: 40},
             {key: "pageToken", value: param.pageToken}
         ]
         finalUrl = baseUrl + "?"

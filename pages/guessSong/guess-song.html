@@ -75,20 +75,15 @@ processDataFile(data);
 } else if (customPlaylistId) {
 console.log("using custom playlist")
 // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
-// apiKey = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
-apiKey = "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos"
-$.ajax({
-type: "GET",
-url: formatYTUrl(customPlaylistId),
-contentType: 'application/json; charset=utf-8',
-dataType: 'json',
-success: function(data) {
-processYTGetPlaylistItems(data);
-},
-error: function(e) {
-console.log(e)
+param = {
+apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
+playlistId: customPlaylistId,
+pageToken: "",
 }
-});
+customPlaylistRes = []
+// use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
+initalCustomPlaylistRes = []
+fetchPlaylistItems(param)
 }
 //hide the answer
 toggleAnswerDisplay();
@@ -235,7 +230,7 @@ function processYTGetPlaylistItems(res) {
 console.log("on processed YT API");
 console.log("res",res);
 // Convert res JSON to object format
-const input = res.items.map(item => {
+const input = res.map(item => {
 return {
 videoId: item.snippet.resourceId.videoId,
 title: item.snippet.title,
@@ -246,20 +241,55 @@ console.log("playlistData",input);
 playlistData = input
 initializeYoutubePlayer();
 }
+function fetchPlaylistItems(param) {
+$.ajax({
+type: "GET",
+url: formatYTUrl(param),
+contentType: 'application/json; charset=utf-8',
+dataType: 'json',
+success: function(data) {
+// console.log(customPlaylistRes)
+if(initalCustomPlaylistRes.length == 0) {
+initalCustomPlaylistRes = initalCustomPlaylistRes.concat(data.items)
+}
+customPlaylistRes = customPlaylistRes.concat(data.items)
+// Check if there is a next page
+if (data.prevPageToken && param.prevPageToken == data.prevPageToken) {
+//there is a bug where featured playlist's pagination does not work, the nextPageToken will keep repeating
+console.log("youtube api nextPageToken bug, stop looping")
+// due to bug, use only first page's result
+processYTGetPlaylistItems(initalCustomPlaylistRes);
+} else if (data.nextPageToken) {
+console.log("have nextPageToken, loop again")
+param.prevPageToken = data.prevPageToken; //use this as indicator to determine if the playlist is endless looping
+param.pageToken = data.nextPageToken;
+// Fetch the next page of results
+fetchPlaylistItems(param);
+} else {
+// after fetching all items in playlist
+processYTGetPlaylistItems(customPlaylistRes);
+}
+},
+error: function(e) {
+console.log(e)
+}
+});
+}
 function shuffleArray(array) {
 for (let i = array.length - 1; i > 0; i--) {
 const j = Math.floor(Math.random() * (i + 1));
 [array[i], array[j]] = [array[j], array[i]];
 }
 }
-function formatYTUrl(playlistId) {
+function formatYTUrl(param) {
 baseUrl = "https://youtube.googleapis.com/youtube/v3/playlistItems"
 params = [
-{key: "playlistId", value: playlistId},
-{key: "key", value: "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"},
+{key: "playlistId", value: param.playlistId},
+{key: "key", value: param.apiKey},
 {key: "part", value: "contentDetails"},
 {key: "part", value: "snippet"},
-{key: "maxResults", value: 100}
+{key: "maxResults", value: 50},
+{key: "pageToken", value: param.pageToken}
 ]
 finalUrl = baseUrl + "?"
 params.forEach(element => {
