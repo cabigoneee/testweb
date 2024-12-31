@@ -63,15 +63,18 @@
 <label>At your Youtube Music Playlist, click "Share" and "Copy Link"</label>
 <div class="container">
 <form class="">
+<div id="linkInputs">
 <div class="form-group playlistInput">
 <div class="flex">
 <label class="col-3 playlistInputKey" for="customPlaylistLink">Link:&nbsp;</label>
 <input type="text" class="form-control" id="customPlaylistLink" placeholder="Paste Link">
+<a href="#" class="removeLink">Remove</a>
 </div>
 <div class="flex d-none" id="invalidPlaylistAlert">
 <label class="col-3 playlistInputKey"></label>
 <div class="input-alert" role="alert">
 Invalid Youtube Playlist link
+</div>
 </div>
 </div>
 </div>
@@ -91,6 +94,7 @@ Invalid Youtube Playlist link
 </div>
 </div>
 <div class="flex">
+<a id="addLink" class="btn btn-primary">Add Link</a>
 <a id="submitCustomPlaylist" class="btn btn-primary guessSongSubmit disabled">GO</a>
 </div>
 </form>
@@ -120,20 +124,57 @@ $('#invalidPlaylistAlert').addClass('d-none')
 $('#submitCustomPlaylist').Class('disabled');
 }
 })
-$('#submitCustomPlaylist').on('click', function(){
-var customPlaylistLink = $("#customPlaylistLink").val()
-var teamSize = $("#teamSize").val()
+});
+</script>
+<script>
+$(document).ready(function() {
+$('#addLink').on('click', function() {
+$('#linkInputs').append(`
+<div class="form-group playlistInput">
+<div class="flex">
+<label class="col-3 playlistInputKey" for="customPlaylistLink">Link:&nbsp;</label>
+<input type="text" class="form-control" id="customPlaylistLink" placeholder="Paste Link">
+<a href="#" class="removeLink">Remove</a>
+</div>
+<div class="flex d-none" id="invalidPlaylistAlert">
+<label class="col-3 playlistInputKey"></label>
+<div class="input-alert" role="alert">
+Invalid Youtube Playlist link
+</div>
+</div>
+</div>
+`);
+});
+// Remove dynamically added input field
+$(document).on('click', '.removeLink', function() {
+$(this).closest('.form-group').remove();
+});
+$(document).on('click', '#submitCustomPlaylist', function() {
+var customPlaylistIds = [];
+var teamSize = $("#teamSize").val();
+$('.form-group.playlistInput').each(function() {
+var customPlaylistLink = $(this).find(".form-control").val(); // Get the value of the input field within the current .form-group
 // extract playlist id from full link
 // customPlaylistLink = "https://music.youtube.com/playlist?list=RDCLAK5uy_np-D-N28McB0WbmPyWUOKGXOSoWpi8jh8&playnext=1&si=-i2aQ_1DM2wRtxoZ" //for test debug only
 try {
 var link = new URL(customPlaylistLink);
 var customPlaylistId = link.searchParams.get("list");
 console.log(customPlaylistId + " " + teamSize)
-location.href = "./guess-song.html?customPlaylistId=" + customPlaylistId + "&teamSize=" + teamSize
-} catch(err) {
+customPlaylistIds.push(customPlaylistId);
+// location.href = "./guess-song.html?customPlaylistId=" + customPlaylistId + "&teamSize=" + teamSize
+} catch (err) {
 console.log("invalid link")
 $('#invalidPlaylistAlert').removeClass('d-none')
 }
+})
+var url = "./guess-song.html?";
+customPlaylistIds.forEach(function(playlistId) {
+url += "customPlaylistId=" + playlistId + "&";
+});
+url += "teamSize=" + teamSize;
+console.log("customPlaylistIds",url)
+// Redirect to the constructed URL
+location.href = url;
 })
 });
 </script>

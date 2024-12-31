@@ -52,15 +52,19 @@
 //global variable
 var player = $('#ytPlayer')
 var playlistName = "ado";
-var playlistData;
+var playlistData = [];
 var showAnswer = false;
+var count = 0;
 // when webpage ready, init
 $(document).ready(function() {
 //get url param
 const searchParams = new URLSearchParams(window.location.search);
 var playlistId = searchParams.get('playlistId');
-var customPlaylistId = searchParams.get('customPlaylistId');
 var teamSize = searchParams.get('teamSize');
+var customPlaylistIds = [];
+searchParams.getAll('customPlaylistId').forEach(function(customPlaylistId) {
+customPlaylistIds.push(customPlaylistId);
+});
 if (playlistId) {
 console.log("using selected playlist")
 // Read Data File
@@ -72,8 +76,11 @@ success: function(data) {
 processDataFile(data);
 }
 });
-} else if (customPlaylistId) {
+} else if (customPlaylistIds.length !== 0) {
 console.log("using custom playlist")
+var promises = [];
+customPlaylistIds.forEach(function(customPlaylistId) {
+console.log("customPlaylistId",customPlaylistId)
 // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
 param = {
 apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
@@ -83,7 +90,15 @@ pageToken: "",
 customPlaylistRes = []
 // use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
 initalCustomPlaylistRes = []
-fetchPlaylistItems(param)
+promises.push(fetchPlaylistItems(param))
+})
+Promise.all(promises).then(function() {
+console.log("All custom playlist data fetched");
+console.log("playlistData:", playlistData);
+initializeYoutubePlayer();
+}).catch(function(error) {
+console.error("Error fetching playlist items:", error);
+});
 }
 //hide the answer
 toggleAnswerDisplay();
@@ -224,7 +239,6 @@ function processDataFile(raw) {
 var input = $.csv.toObjects(raw);
 playlistData = input
 console.log("playlistData",input)
-initializeYoutubePlayer()
 }
 function processYTGetPlaylistItems(res) {
 console.log("on processed YT API");
@@ -237,11 +251,12 @@ title: item.snippet.title,
 singer: item.snippet.videoOwnerChannelTitle
 };
 });
-console.log("playlistData",input);
-playlistData = input
-initializeYoutubePlayer();
+playlistData = playlistData.concat(input);
+count++;
+// initializeYoutubePlayer();
 }
 function fetchPlaylistItems(param) {
+return new Promise(function(resolve, reject) {
 $.ajax({
 type: "GET",
 url: formatYTUrl(param),
@@ -259,6 +274,7 @@ if (data.prevPageToken && param.prevPageToken == data.prevPageToken) {
 console.log("youtube api nextPageToken bug, stop looping")
 // due to bug, use only first page's result
 processYTGetPlaylistItems(initalCustomPlaylistRes);
+resolve();
 } else if (data.nextPageToken) {
 console.log("have nextPageToken, loop again")
 param.prevPageToken = data.prevPageToken; //use this as indicator to determine if the playlist is endless looping
@@ -268,11 +284,14 @@ fetchPlaylistItems(param);
 } else {
 // after fetching all items in playlist
 processYTGetPlaylistItems(customPlaylistRes);
+resolve();
 }
 },
 error: function(e) {
 console.log(e)
+reject(e);
 }
+});
 });
 }
 function shuffleArray(array) {
