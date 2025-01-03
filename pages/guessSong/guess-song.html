@@ -54,7 +54,8 @@ var player = $('#ytPlayer')
 var playlistName = "ado";
 var playlistData = [];
 var showAnswer = false;
-var count = 0;
+// a promise array to store all the API fetch to be executed
+var promises = [];
 // when webpage ready, init
 $(document).ready(function() {
 //get url param
@@ -78,22 +79,24 @@ processDataFile(data);
 });
 } else if (customPlaylistIds.length !== 0) {
 console.log("using custom playlist")
-var promises = [];
 customPlaylistIds.forEach(function(customPlaylistId) {
-console.log("customPlaylistId",customPlaylistId)
+console.log("customPlaylistId: " + customPlaylistId)
 // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
 param = {
 apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
 playlistId: customPlaylistId,
 pageToken: "",
 }
-customPlaylistRes = []
-// use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
-initalCustomPlaylistRes = []
 promises.push(fetchPlaylistItems(param))
 })
-Promise.all(promises).then(function() {
+// Run the promise array
+iterablePromise(promises).then(function(data) {
 console.log("All custom playlist data fetched");
+// console.log(data)
+data = filterYTCustomPlaylist(data)
+data.forEach(d => {
+playlistData = playlistData.concat(d.data)
+})
 console.log("playlistData:", playlistData);
 initializeYoutubePlayer();
 }).catch(function(error) {
@@ -135,7 +138,7 @@ function initializeYoutubePlayer() {
 //library: https://github.com/Luxiyalu/jquery-youtube
 shuffleArray(playlistData)
 var thisSong = playlistData[0]
-console.log("hi")
+console.log("in initializeYoutubePlayer()")
 console.log(thisSong)
 // update display table
 $("#songTitle").text(thisSong.title)
@@ -239,6 +242,7 @@ function processDataFile(raw) {
 var input = $.csv.toObjects(raw);
 playlistData = input
 console.log("playlistData",input)
+initializeYoutubePlayer();
 }
 function processYTGetPlaylistItems(res) {
 console.log("on processed YT API");
@@ -251,19 +255,23 @@ title: item.snippet.title,
 singer: item.snippet.videoOwnerChannelTitle
 };
 });
-playlistData = playlistData.concat(input);
-count++;
-// initializeYoutubePlayer();
+return input;
 }
 function fetchPlaylistItems(param) {
+// use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
+var initalCustomPlaylistRes = []
+var customPlaylistRes = []
 return new Promise(function(resolve, reject) {
-$.ajax({
-type: "GET",
-url: formatYTUrl(param),
-contentType: 'application/json; charset=utf-8',
-dataType: 'json',
-success: function(data) {
-// console.log(customPlaylistRes)
+let res = fetch(formatYTUrl(param)).then(function(res) {
+return res.json();
+}).then(function(json) {
+let data = json
+let outputTemplate = {
+playlistId: param.playlistId,
+data: [],
+isFeaturedPlaylistBug: false
+}
+console.log(customPlaylistRes)
 if(initalCustomPlaylistRes.length == 0) {
 initalCustomPlaylistRes = initalCustomPlaylistRes.concat(data.items)
 }
@@ -273,26 +281,36 @@ if (data.prevPageToken && param.prevPageToken == data.prevPageToken) {
 //there is a bug where featured playlist's pagination does not work, the nextPageToken will keep repeating
 console.log("youtube api nextPageToken bug, stop looping")
 // due to bug, use only first page's result
-processYTGetPlaylistItems(initalCustomPlaylistRes);
-resolve();
+outputTemplate.data = processYTGetPlaylistItems(initalCustomPlaylistRes);
+outputTemplate.isFeaturedPlaylistBug = true
 } else if (data.nextPageToken) {
 console.log("have nextPageToken, loop again")
 param.prevPageToken = data.prevPageToken; //use this as indicator to determine if the playlist is endless looping
 param.pageToken = data.nextPageToken;
 // Fetch the next page of results
-fetchPlaylistItems(param);
+promises.push(fetchPlaylistItems(param))
+outputTemplate.data = processYTGetPlaylistItems(initalCustomPlaylistRes);
 } else {
 // after fetching all items in playlist
-processYTGetPlaylistItems(customPlaylistRes);
-resolve();
+outputTemplate.data = processYTGetPlaylistItems(customPlaylistRes);
 }
-},
-error: function(e) {
-console.log(e)
-reject(e);
+resolve(outputTemplate)
+});
+})
 }
-});
-});
+// a handle function to remove bugged featured playlist, the boolean isFeaturedPlaylistBug is provided at above function
+function filterYTCustomPlaylist(playlists) {
+var filteredPlaylist = playlists
+var buggedPlaylistIds = []
+playlists.forEach(pl => {
+if(pl.isFeaturedPlaylistBug) {
+buggedPlaylistIds.push(pl.playlistId)
+}
+})
+var filteredPlaylist = playlists.filter(pl => {
+return !(buggedPlaylistIds.includes(pl.playlistId) && !pl.isFeaturedPlaylistBug)
+})
+return filteredPlaylist
 }
 function shuffleArray(array) {
 for (let i = array.length - 1; i > 0; i--) {
@@ -348,6 +366,21 @@ opacity: 0.95 // Adjust the opacity as needed
 function removeVideoOverlay() {
 console.log("remove overlay");
 $('#videoOverlay').remove();
+}
+// promise helper function
+function iterablePromise(iterable) {
+return Promise.all(iterable).then(function(resolvedIterable) {
+console.log(iterable.length)
+console.log(resolvedIterable.length)
+if (iterable.length != resolvedIterable.length) {
+// The list of promises or values changed. Return a new Promise.
+// The original promise won't resolve until the new one does.
+return iterablePromise(iterable);
+}
+// The list of promises or values stayed the same.
+// Return results immediately.
+return resolvedIterable;
+});
 }
 </script>
 <!--  -->

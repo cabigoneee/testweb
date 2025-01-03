@@ -154,16 +154,19 @@ var customPlaylistIds = [];
 var teamSize = $("#teamSize").val();
 $('.form-group.playlistInput').each(function() {
 var customPlaylistLink = $(this).find(".form-control").val(); // Get the value of the input field within the current .form-group
+console.log("customPlaylistLink",customPlaylistLink)
 // extract playlist id from full link
 // customPlaylistLink = "https://music.youtube.com/playlist?list=RDCLAK5uy_np-D-N28McB0WbmPyWUOKGXOSoWpi8jh8&playnext=1&si=-i2aQ_1DM2wRtxoZ" //for test debug only
 try {
 var link = new URL(customPlaylistLink);
+console.log("link",link)
 var customPlaylistId = link.searchParams.get("list");
 console.log(customPlaylistId + " " + teamSize)
 customPlaylistIds.push(customPlaylistId);
 // location.href = "./guess-song.html?customPlaylistId=" + customPlaylistId + "&teamSize=" + teamSize
 } catch (err) {
 console.log("invalid link")
+console.log("err: ",err)
 $('#invalidPlaylistAlert').removeClass('d-none')
 }
 })
