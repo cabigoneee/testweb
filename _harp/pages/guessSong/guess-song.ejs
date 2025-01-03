@@ -46,9 +46,11 @@
     //global variable
     var player = $('#ytPlayer')
     var playlistName = "ado";
-    var playlistData;
+    var playlistData = [];
     var showAnswer = false;
 
+    // a promise array to store all the API fetch to be executed
+    var promises = [];
 
     // when webpage ready, init
     $(document).ready(function() {
@@ -56,10 +58,11 @@
         //get url param
         const searchParams = new URLSearchParams(window.location.search);
         var playlistId = searchParams.get('playlistId');
-        var customPlaylistId = searchParams.get('customPlaylistId');
-
         var teamSize = searchParams.get('teamSize');
-
+        var customPlaylistIds = [];
+        searchParams.getAll('customPlaylistId').forEach(function(customPlaylistId) {
+            customPlaylistIds.push(customPlaylistId);
+        });
 
         if (playlistId) {
             console.log("using selected playlist")
@@ -72,22 +75,35 @@
                     processDataFile(data);
                 }
             });
-        } else if (customPlaylistId) {
+        } else if (customPlaylistIds.length !== 0) {
             console.log("using custom playlist")
-            // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
-            param = {
-                apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
-                playlistId: customPlaylistId,
-                pageToken: "",
-            }
 
-            customPlaylistRes = []
+            customPlaylistIds.forEach(function(customPlaylistId) {
+                console.log("customPlaylistId: " + customPlaylistId)
+                // customPlaylistId = "RDCLAK5uy_mfU0cXtK1L_pNWL5z0hyE9N_4MnFjX03c" //for test debug only
+                param = {
+                    apiKey: "AIzaSyBhKb7IMRn5S4ocfXZt7zdvss9P5-v3wos",
+                    playlistId: customPlaylistId,
+                    pageToken: "",
+                }
+                promises.push(fetchPlaylistItems(param))
+            })
+            // Run the promise array
+            iterablePromise(promises).then(function(data) {
+                console.log("All custom playlist data fetched");
+                // console.log(data)
+                data = filterYTCustomPlaylist(data)
+                data.forEach(d => {
+                    playlistData = playlistData.concat(d.data)
+                })
+                console.log("playlistData:", playlistData);
 
-            // use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
-            initalCustomPlaylistRes = []
-
-            fetchPlaylistItems(param)
+                initializeYoutubePlayer();
+            }).catch(function(error) {
+                console.error("Error fetching playlist items:", error);
+            });
         }
+
         //hide the answer
         toggleAnswerDisplay();
 
@@ -134,7 +150,7 @@
         shuffleArray(playlistData)
 
         var thisSong = playlistData[0]
-        console.log("hi")
+        console.log("in initializeYoutubePlayer()")
         console.log(thisSong)
 
         // update display table
@@ -152,7 +168,7 @@
                 console.log("on ready") ;
                 autoPlay();
                 hideVideoPlayer();
-                },      // on video ready
+            },      // on video ready
             onStart: function(){},      // on video start
             onPause: function(){},      // on video pause
             onEnd: function(){},        // on video end
@@ -259,7 +275,8 @@
 
         console.log("playlistData",input)
 
-        initializeYoutubePlayer()
+        initializeYoutubePlayer();
+
     }
 
     function processYTGetPlaylistItems(res) {
@@ -274,20 +291,28 @@
                 singer: item.snippet.videoOwnerChannelTitle
             };
         });
-        console.log("playlistData",input);
-        playlistData = input
-        initializeYoutubePlayer();
+
+        return input;
     }
 
     function fetchPlaylistItems(param) {
+        // use this object to store one fetch earlier's result, only to counter the youtube api endless nextPageToken bug
+        var initalCustomPlaylistRes = []
+        var customPlaylistRes = []
 
-        $.ajax({
-            type: "GET",
-            url: formatYTUrl(param),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success: function(data) {
-                // console.log(customPlaylistRes)
+        return new Promise(function(resolve, reject) {
+
+            let res = fetch(formatYTUrl(param)).then(function(res) {
+                return res.json();
+            }).then(function(json) {
+                let data = json
+                let outputTemplate = {
+                    playlistId: param.playlistId,
+                    data: [],
+                    isFeaturedPlaylistBug: false
+                }
+
+                console.log(customPlaylistRes)
                 if(initalCustomPlaylistRes.length == 0) {
                     initalCustomPlaylistRes = initalCustomPlaylistRes.concat(data.items)
                 }
@@ -297,22 +322,39 @@
                     //there is a bug where featured playlist's pagination does not work, the nextPageToken will keep repeating
                     console.log("youtube api nextPageToken bug, stop looping")
                     // due to bug, use only first page's result
-                    processYTGetPlaylistItems(initalCustomPlaylistRes);
+                    outputTemplate.data = processYTGetPlaylistItems(initalCustomPlaylistRes);
+                    outputTemplate.isFeaturedPlaylistBug = true
                 } else if (data.nextPageToken) {
                     console.log("have nextPageToken, loop again")
                     param.prevPageToken = data.prevPageToken; //use this as indicator to determine if the playlist is endless looping
                     param.pageToken = data.nextPageToken;
                     // Fetch the next page of results
-                    fetchPlaylistItems(param);
+                    promises.push(fetchPlaylistItems(param))
+                    outputTemplate.data = processYTGetPlaylistItems(initalCustomPlaylistRes);
                 } else {
                     // after fetching all items in playlist
-                    processYTGetPlaylistItems(customPlaylistRes);
+                    outputTemplate.data = processYTGetPlaylistItems(customPlaylistRes);
                 }
-            },
-            error: function(e) {
-                console.log(e)
+                resolve(outputTemplate)
+            });
+        })
+    }
+
+    // a handle function to remove bugged featured playlist, the boolean isFeaturedPlaylistBug is provided at above function
+    function filterYTCustomPlaylist(playlists) {
+        var filteredPlaylist = playlists
+        var buggedPlaylistIds = []
+        playlists.forEach(pl => {
+            if(pl.isFeaturedPlaylistBug) {
+                buggedPlaylistIds.push(pl.playlistId)
             }
-        });
+        })
+
+        var filteredPlaylist = playlists.filter(pl => {
+            return !(buggedPlaylistIds.includes(pl.playlistId) && !pl.isFeaturedPlaylistBug)
+        })
+
+        return filteredPlaylist
     }
 
     function shuffleArray(array) {
@@ -375,6 +417,22 @@
     function removeVideoOverlay() {
         console.log("remove overlay");
         $('#videoOverlay').remove();
+    }
+
+    // promise helper function
+    function iterablePromise(iterable) {
+        return Promise.all(iterable).then(function(resolvedIterable) {
+            console.log(iterable.length)
+            console.log(resolvedIterable.length)
+            if (iterable.length != resolvedIterable.length) {
+                // The list of promises or values changed. Return a new Promise.
+                // The original promise won't resolve until the new one does.
+                return iterablePromise(iterable);
+            }
+            // The list of promises or values stayed the same.
+            // Return results immediately.
+            return resolvedIterable;
+        });
     }
 
 </script>
