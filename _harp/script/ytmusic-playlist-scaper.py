@@ -6,7 +6,7 @@ import requests
 
 ############################ main
 # retrieve json from API
-playlist_id = "RDCLAK5uy_nPxXg1gYFA4ZfQ0ke7N8ONHUPg5Ovr7AU"
+playlist_id = "LRYR5MmaE_IYfzLrqQkSot42Pazmlcb7Z1LcT"
 api_key = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
 
 url = "https://youtube.googleapis.com/youtube/v3/playlistItems?part=contentDetails&part=snippet&maxResults=100&playlistId=%s&key=%s" % (playlist_id, api_key)
@@ -36,7 +36,7 @@ for item in data.get("items"):
     song.append(item["snippet"]["title"])
     song.append(item["snippet"]["videoOwnerChannelTitle"])
     songs.append(song)
-    
+    print(123)
 # print(songs)
 
 # save to csv
