@@ -33,7 +33,7 @@ def fetch_playlist_items(playlist_id, api_key):
     return all_items
 
 # Main code
-playlist_id = "PL6nFasqdF_3xb0flyGSy6BtlL6G7l09er"
+playlist_id = "OLAK5uy_nKNj-77TZN5SmK5IGyXskvVZoM9OGok7g"
 api_key = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
 
 playlist_items = fetch_playlist_items(playlist_id, api_key)
@@ -49,7 +49,7 @@ for item in playlist_items:
     ]
     songs.append(song)
 
-filename = "../guessSongAsset/song_list_02.csv"
+filename = "../guessSongAsset/songlist.csv"
 
 with open(filename, 'w', encoding="utf-8", newline='') as f:
     csv_writer = csv.writer(f)
