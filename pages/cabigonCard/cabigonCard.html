@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hi All</title>
+<meta name="description" content="My default descriptions" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+</head>
+<body class="normal-body">
+<!--  -->
+<!-- "yield" represents the core content of webpage to be loaded   -->
+<link rel="stylesheet" type="text/css" href="../../main.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+.card-gallery {
+padding: 20px;
+max-width: 1400px;
+margin: 0 auto;
+}
+.card-gallery h1 {
+text-align: center;
+margin-bottom: 30px;
+color: #333;
+}
+.card-row {
+display: flex;
+flex-wrap: wrap;
+gap: 15px;
+margin-bottom: 15px;
+}
+.card-item {
+flex: 0 0 calc(20% - 12px);
+max-width: calc(20% - 12px);
+box-sizing: border-box;
+}
+.card-item img {
+width: 100%;
+height: auto;
+border-radius: 10px;
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+transition: transform 0.3s ease;
+}
+.card-item img:hover {
+transform: scale(1.05);
+box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+.card-item.collected {
+position: relative;
+}
+.card-item.collected img {
+opacity: 0.5;
+}
+.card-item.collected::after {
+content: '✓ GETTO';
+position: absolute;
+top: 10px;
+right: 10px;
+transform: none;
+background: rgba(40, 167, 69, 0.9);
+color: white;
+padding: 8px 16px;
+border-radius: 5px;
+font-weight: bold;
+font-size: 14px;
+pointer-events: none;
+}
+.collection-stats {
+text-align: center;
+margin-bottom: 20px;
+font-size: 18px;
+color: #555;
+}
+.collection-stats strong {
+color: #28a745;
+}
+@media (max-width: 1200px) {
+.card-item {
+flex: 0 0 calc(25% - 12px);
+max-width: calc(25% - 12px);
+}
+}
+@media (max-width: 768px) {
+.card-item {
+flex: 0 0 calc(33.333% - 12px);
+max-width: calc(33.333% - 12px);
+}
+}
+@media (max-width: 480px) {
+.card-item {
+flex: 0 0 calc(50% - 12px);
+max-width: calc(50% - 12px);
+}
+}
+</style>
+<div class="card-gallery">
+<h1>Snorlax Pokemon Card Collection</h1>
+<div id="cardContainer" class="card-row">
+<!-- Cards will be loaded here dynamically -->
+</div>
+</div>
+<script>
+$(document).ready(function() {
+// List of card image filenames
+// To mark a card as collected, change 'collected: false' to 'collected: true'
+const cardImages = [
+{ filename: 'M3_62_R_JP_SM.png', collected: true },
+{ filename: 'M2a_136_R_JP_SM.png', collected: true },
+{ filename: 'SV9_75_R_JP_SM.png', collected: true },
+{ filename: 'SVLN_10_R_JP_SM.png', collected: true },
+{ filename: 'SV5a_51_R_JP_SM.png', collected: true },
+{ filename: 'SVI_46_R_JP_SM.png', collected: false },
+{ filename: 'SV4a_310_R_JP_SM.png', collected: true },
+{ filename: 'SVG_21_R_JP_SM.png', collected: true },
+{ filename: 'SV2a_143_R_JP_SM.png', collected: true },
+{ filename: 'S10b_56_R_JP_SM.png', collected: true },
+{ filename: 'S10a_58_R_JP_SM.png', collected: false },
+{ filename: 'SV4K_59_R_JP_LG.png', collected: true },
+{ filename: 'SI_342_R_JP_SM.png', collected: false },
+{ filename: 'S8b_126_R_JP_SM.png', collected: true },
+{ filename: 'SH_38_R_JP_SM.png', collected: false },
+{ filename: 'S4_84_R_JP_SM.png', collected: true },
+{ filename: 'S2_77_R_JP_SM.png', collected: false },
+{ filename: 'SAg_10_R_JP_SM.png', collected: false },
+{ filename: 'SP_156_R_JP_SM.png', collected: false },
+{ filename: 'SML_38_R_JP_SM.png', collected: false },
+{ filename: 'SM10_76_R_JP_SM.png', collected: true },
+{ filename: 'XY10_57_R_JP_SM.png', collected: false },
+{ filename: 'XY2_66_R_JP_SM.png', collected: false },
+{ filename: 'HXY_26_R_JP_SM.png', collected: false },
+{ filename: 'XYP_149_R_JP_SM.png', collected: false },
+{ filename: 'BW7_55_R_JP_SM.png', collected: false },
+{ filename: 'HSZ_27_R_JP_SM.png', collected: false },
+{ filename: 'SVM_94_R_JP_SM.png', collected: false },
+{ filename: 'SMP_1_R_JP_SM.png', collected: false },
+{ filename: 'S1H_45_R_JP_SM.png', collected: true },
+{ filename: 'S1H_66_R_JP_SM.png', collected: false },
+{ filename: 'S1H_46_R_JP_LG.png', collected: true },
+{ filename: 'SV2a_181_R_JP_SM.png', collected: true },
+{ filename: 'S10a_77_R_JP_SM.png', collected: true },
+{ filename: 'SV6_113_R_JP_LG.png', collected: true },
+{ filename: 'SMP_297_R_JP_LG.png', collected: true },
+{ filename: 'SM9_66_R_JP_LG.png', collected: true },
+{ filename: 'SM9_106_R_JP_LG.png', collected: true },
+{ filename: 'S5a_93_UR_JP_SS.png', collected: false },
+{ filename: 'Delta_1_R_JP_OD.png', collected: false },
+{ filename: 'Pt2_70_C_JP_Dpt.png', collected: false },
+{ filename: 'DP_P_L_127_JP_SM.png', collected: false },
+{ filename: 'XYP_261_R_JP_SM.png', collected: true },
+{ filename: 'ChallengeFromTheDarkness_73_JP_SM.png', collected: false },
+{ filename: 'RocketGang_54_JP_SM.png', collected: false },
+{ filename: 'RocketGang_58_JP_SM.png', collected: false },
+];
+const cardContainer = $('#cardContainer');
+// Count collected cards
+const collectedCount = cardImages.filter(card => card.collected).length;
+const totalCount = cardImages.length;
+// Add collection stats
+const statsDiv = $('<div class="collection-stats"></div>');
+statsDiv.html(`<p>Collection Progress: <strong>${collectedCount} / ${totalCount}</strong> cards (${Math.round(collectedCount/totalCount*100)}%)</p>`);
+$('.card-gallery h1').after(statsDiv);
+// Load each card image
+cardImages.forEach(function(card) {
+const cardItem = $('<div class="card-item"></div>');
+// Add collected class if card is collected
+if (card.collected) {
+cardItem.addClass('collected');
+}
+const img = $('<img>').attr({
+'src': '../../asset/cabigonAsset/' + card.filename,
+'alt': 'Snorlax Card',
+'loading': 'lazy'
+});
+cardItem.append(img);
+cardContainer.append(cardItem);
+});
+});
+</script>
+<!--  -->
+</body>
+</html>

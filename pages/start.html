@@ -13,33 +13,109 @@
 <!--  -->
 <!-- "yield" represents the core content of webpage to be loaded   -->
 <link rel="stylesheet" type="text/css" href="../main.css">
-<div>
-<div class="col-lg-6 col-xs-12 top">
-<a href="./music/music.html">
-<div class="top-left">
-Japanese Music
-</div>
+<style>
+.page-list-container {
+max-width: 1200px;
+margin: 0 auto;
+padding: 40px 20px;
+}
+.page-list-title {
+text-align: center;
+font-size: 48px;
+margin-bottom: 40px;
+color: #333;
+}
+.page-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+gap: 25px;
+padding: 20px 0;
+}
+.page-card {
+background: white;
+border-radius: 12px;
+padding: 30px 20px;
+text-align: center;
+text-decoration: none;
+color: #333;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+transition: all 0.3s ease;
+display: flex;
+flex-direction: column;
+justify-content: center;
+min-height: 150px;
+}
+.page-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+text-decoration: none;
+}
+.page-card-title {
+font-size: 24px;
+font-weight: bold;
+margin-bottom: 10px;
+}
+.page-card-description {
+font-size: 14px;
+color: #666;
+}
+/* Color themes for different cards */
+.page-card.theme-dark {
+background: linear-gradient(135deg, #3d231b 0%, #5a3428 100%);
+color: white;
+}
+.page-card.theme-light {
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+color: #3d231b;
+}
+.page-card.theme-green {
+background: linear-gradient(135deg, #2ECC71 0%, #27ae60 100%);
+color: white;
+}
+.page-card.theme-yellow {
+background: linear-gradient(135deg, #F7DC6F 0%, #f4d03f 100%);
+color: #2ECC71;
+}
+.page-card.theme-blue {
+background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+color: white;
+}
+.page-card.theme-purple {
+background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+color: white;
+}
+@media (max-width: 768px) {
+.page-grid {
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 15px;
+}
+.page-list-title {
+font-size: 36px;
+}
+}
+</style>
+<div class="page-list-container">
+<h1 class="page-list-title">Cabigon's Pages</h1>
+<div class="page-grid">
+<a href="./music/music.html" class="page-card theme-dark">
+<div class="page-card-title">Japanese Music</div>
+<div class="page-card-description">Music player and playlists</div>
 </a>
-</div>
-<div class="col-lg-6 col-xs-12 top">
-<a href="./guessSong/select-song.html">
-<div class="top-right">
-Guess the Song
-</div>
+<a href="./guessSong/select-song.html" class="page-card theme-light">
+<div class="page-card-title">Guess the Song</div>
+<div class="page-card-description">Song guessing game</div>
 </a>
-</div>
-<div class="col-lg-6 col-xs-12 bottom">
-<a href="./6nimmt/6nimmt.html">
-<div class="bottom-left">
-6 nimmt card memorizer
-</div>
+<a href="./6nimmt/6nimmt.html" class="page-card theme-green">
+<div class="page-card-title">6 nimmt</div>
+<div class="page-card-description">Card memorizer tool</div>
 </a>
-</div>
-<div class="col-lg-6 col-xs-12 bottom">
-<a href="./log/logs.html">
-<div class="bottom-right">
-Technical Log
-</div>
+<a href="./log/logs.html" class="page-card theme-yellow">
+<div class="page-card-title">Technical Log</div>
+<div class="page-card-description">Development notes and logs</div>
+</a>
+<a href="./cabigonCard/cabigonCard.html" class="page-card theme-blue">
+<div class="page-card-title">Snorlax Cards</div>
+<div class="page-card-description">Pokemon card collection tracker</div>
 </a>
 </div>
 </div>
