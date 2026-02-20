@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hi All</title>
+<meta name="description" content="My default descriptions" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<!-- <link rel="stylesheet" type="text/css" href="/main.css"> -->
+<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+</head>
+<body class="normal-body">
+<!--  -->
+<!-- "yield" represents the core content of webpage to be loaded   -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<h2>Choose a playlist</h2>
+<div class="container">
+<form class="">
+<div class="form-group playlistInput">
+<div class="flex">
+<label class="col-3 playlistInputKey" for="playlistId">Playlist:&nbsp;</label>
+<select class="form-select dropdown" aria-label="playlistId" id="playlistId">
+<option selected value="">playlist / singer...</option>
+<option value="ado">Ado</option>
+<option value="pinocchiop">PinocchioP</option>
+<option value="suisei">Suisei</option>
+<option value="zutomayo">Zutomayo</option>
+</select>
+</div>
+</div>
+<div class="form-group playlistInput">
+<div class="flex">
+<label class="col-3 playlistInputKey" for="teamSize">teamSize:&nbsp;</label>
+<select class="form-select" aria-label="teamSize" id="teamSize">
+<option value="1">1</option>
+<option selected value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+</select>
+</div>
+</div>
+<div class="flex">
+<a id="submitBuiltInPlaylist" class="btn btn-primary guessSongSubmit disabled">GO</a>
+</div>
+</form>
+</div>
+<h2>Use your playlist</h2>
+<h4>At your Youtube Music Playlist, click "Share" and "Copy Link"</h4>
+<div class="container">
+<form class="">
+<div class="form-group playlistInput">
+<div class="flex">
+<label class="col-3 playlistInputKey" for="customPlaylistLink">Link:&nbsp;</label>
+<input type="text" class="form-control" id="customPlaylistLink" placeholder="Paste Link">
+</div>
+<div class="flex d-none" id="invalidPlaylistAlert">
+<label class="col-3 playlistInputKey"></label>
+<div class="input-alert" role="alert">
+Invalid Youtube Playlist link
+</div>
+</div>
+</div>
+<div class="form-group playlistInput">
+<div class="flex">
+<label class="col-3 playlistInputKey" for="teamSize">teamSize:&nbsp;</label>
+<select class="form-select" aria-label="teamSize" id="teamSize">
+<option value="1">1</option>
+<option selected value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+</select>
+</div>
+</div>
+<div class="flex">
+<a id="submitCustomPlaylist" class="btn btn-primary guessSongSubmit disabled">GO</a>
+</div>
+</form>
+</div>
+<script>
+$(document).ready(function() {
+// on playlist dropdown update, check selected option and update submit button state
+$('select#playlistId').on('change', function(){
+console.log("captured select change event")
+this.value != "" ? $('#submitBuiltInPlaylist').removeClass('disabled') : $('#submitBuiltInPlaylist').addClass('disabled');
+})
+// on playlist submit button, go to next page based on input
+$('#submitBuiltInPlaylist').on('click', function(){
+var playlistId = $("#playlistId").val()
+var teamSize = $("#teamSize").val()
+console.log(playlistId + " " + teamSize)
+location.href = "./guess-song.html?playlistId=" + playlistId + "&teamSize=" + teamSize
+})
+// on playlist submit button, go to next page based on input
+$('#customPlaylistLink').on('change paste input', function(){
+console.log("captured select change event")
+if(this.value != "") {
+$('#submitCustomPlaylist').removeClass('disabled');
+$('#invalidPlaylistAlert').addClass('d-none')
+} else {
+$('#submitCustomPlaylist').Class('disabled');
+}
+})
+$('#submitCustomPlaylist').on('click', function(){
+var customPlaylistLink = $("#customPlaylistLink").val()
+var teamSize = $("#teamSize").val()
+// extract playlist id from full link
+// customPlaylistLink = "https://music.youtube.com/playlist?list=RDCLAK5uy_np-D-N28McB0WbmPyWUOKGXOSoWpi8jh8&playnext=1&si=-i2aQ_1DM2wRtxoZ" //for test debug only
+try {
+var link = new URL(customPlaylistLink);
+var customPlaylistId = link.searchParams.get("list");
+console.log(customPlaylistId + " " + teamSize)
+location.href = "./guess-song.html?customPlaylistId=" + customPlaylistId + "&teamSize=" + teamSize
+} catch(err) {
+console.log("invalid link")
+$('#invalidPlaylistAlert').removeClass('d-none')
+}
+})
+});
+</script>
+<!--  -->
+</body>
+</html>

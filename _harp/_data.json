@@ -11,5 +11,9 @@
   "start":{
     "layout": "_full-layout",
     "title": "Cabigoneee"
+  },
+  "cabigonCard": {
+    "title": "Snorlax Card Collection",
+    "description": "Collection of Snorlax Pokemon Cards"
   }
 }

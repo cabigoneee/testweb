@@ -71,7 +71,7 @@ console.log("using selected playlist")
 // Read Data File
 $.ajax({
 type: "GET",
-url: "../../guessSongAsset/" + playlistId + ".csv",
+url: "../../asset/guessSongAsset/" + playlistId + ".csv",
 dataType: "text",
 success: function(data) {
 processDataFile(data);
