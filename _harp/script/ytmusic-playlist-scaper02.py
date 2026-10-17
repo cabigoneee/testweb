@@ -33,7 +33,7 @@ def fetch_playlist_items(playlist_id, api_key):
     return all_items
 
 # Main code
-playlist_id = "OLAK5uy_nKNj-77TZN5SmK5IGyXskvVZoM9OGok7g"
+playlist_id = "PLZ0Vv74tKZlo"
 api_key = "AIzaSyD-2MmJytmZA0h-JuTaja2Y48S-8zUhF3s"
 
 playlist_items = fetch_playlist_items(playlist_id, api_key)
@@ -42,6 +42,9 @@ songs = []
 fields = ["videoId", "title", "singer"]
 
 for item in playlist_items:
+    if item["snippet"]["title"] == "Deleted video":
+        print("skipped due to video deleted")
+        continue
     song = [
         item["contentDetails"]["videoId"],
         item["snippet"]["title"],
@@ -49,7 +52,7 @@ for item in playlist_items:
     ]
     songs.append(song)
 
-filename = "../guessSongAsset/songlist.csv"
+filename = "songlist.csv"
 
 with open(filename, 'w', encoding="utf-8", newline='') as f:
     csv_writer = csv.writer(f)
