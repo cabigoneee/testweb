@@ -49,6 +49,7 @@
     var playlistData = [];
     var showAnswer = false;
     var beforeChorusSec = 10
+    var checkInterval = 0
 
     // a promise array to store all the API fetch to be executed
     var promises = [];
@@ -168,13 +169,15 @@
             onReady: function() {
                 console.log("on ready") ;
                 autoPlay(thisSong.chorusInSec - beforeChorusSec)
-                releaseAnswer()
+                checkInterval = releaseAnswer(thisSong.chorusInSec)
                 hideVideoPlayer();
             },      // on video ready
-            onStart: function(){},      // on video start
-            onPause: function(){},      // on video pause
-            onEnd: function(){},        // on video end
-            onBuffer: function(){ console.log("on buffer") ;},     // on video buffer
+            onStart: function(){console.log("on start")},      // on video start
+            onPause: function(){console.log("on pause")},      // on video pause
+            onEnd: function(){console.log("on end")},        // on video end
+            onBuffer: function(){ 
+                console.log("on buffer")
+            ;},     // on video buffer
             onStateChange: function(){}, // will be triggered by all the 5 events above
 
             playerVars: {
@@ -237,6 +240,9 @@
 
         //close the current player
         player.clear()
+
+        //remove current song's interval
+        clearInterval(checkInterval)
 
         var playerBlock = "<div id='ytPlayer'></div>"
         $("#ytPlayer").remove()
@@ -414,9 +420,17 @@
         $('#videoOverlay').remove();
     }
 
-    function releaseAnswer() {
-        console.log("release Answer after " + beforeChorusSec + " seconds")
-        setTimeout(onShowAnswerButton, beforeChorusSec * 1000)
+    function releaseAnswer(chorusSec) {
+        console.log("release Answer at " + chorusSec + " seconds")
+        const intervalId = setInterval(() => {
+            console.log("current time:" + player.getCurrentTime())
+            if (player.getCurrentTime() > chorusSec) {
+                onShowAnswerButton()
+                clearInterval(intervalId); // Stops when the song plays at chorus part
+            }
+        }, 500);
+
+        return intervalId
     }
 
     // promise helper function
